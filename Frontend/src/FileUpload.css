@@ -1,0 +1,34 @@
+/* FileUpload.css */
+.file-upload-container {
+	border: 2px dashed #ccc;
+	padding: 20px;
+	width: 300px;
+	margin: auto;
+	text-align: center;
+      }
+      
+      .upload-btn {
+	padding: 10px 20px;
+	background-color: #4CAF50;
+	color: white;
+	border: none;
+	cursor: pointer;
+	margin-top: 10px; /* Add space above the button */
+	display: inline-block; /* To enable the use of margin */
+      }
+      
+      /* Styling for the file input label to look like a button */
+      #file-upload {
+	display: none; /* Hide the default input */
+      }
+      
+      /* When using a label as a proxy for the file input, you can style it like a button */
+      label[for="file-upload"] {
+	padding: 10px 20px;
+	background-color: #f0f0f0;
+	color: #333;
+	border: 1px solid #ccc;
+	cursor: pointer;
+	margin-right: 10px; /* Add space between the label and the button */
+      }
+      
