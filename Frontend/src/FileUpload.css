@@ -1,34 +1,61 @@
 /* FileUpload.css */
-.file-upload-container {
-	border: 2px dashed #ccc;
-	padding: 20px;
-	width: 300px;
-	margin: auto;
+body, html {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: linear-gradient(130deg, #a1c4fd 0%, #c2e9fb 100%);
+	font-family: 'Arial', sans-serif; /* Use the font that matches your design */
+      }
+      
+      .upload-container {
 	text-align: center;
+	padding: 2rem;
+	border-radius: 20px; /* Adjust to match your design */
+	box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+	background: white;
+	max-width: 500px; /* Adjust to match your design */
+	width: 100%;
+      }
+      
+      .title {
+	font-size: 1.5rem; /* Adjust to match your design */
+	color: #333;
+	margin-bottom: 0.5rem;
+      }
+      
+      .subtitle {
+	font-size: 1rem; /* Adjust to match your design */
+	color: #666;
+	margin-bottom: 1.5rem;
+      }
+      
+      #file-upload {
+	display: none;
       }
       
       .upload-btn {
 	padding: 10px 20px;
-	background-color: #4CAF50;
+	background-color: #4CAF50; /* Adjust to match your design */
 	color: white;
 	border: none;
 	cursor: pointer;
-	margin-top: 10px; /* Add space above the button */
-	display: inline-block; /* To enable the use of margin */
+	font-size: 1rem; /* Adjust to match your design */
+	border-radius: 5px;
+	margin: 0.5rem 0; /* Gives space above and below the button */
       }
       
-      /* Styling for the file input label to look like a button */
-      #file-upload {
-	display: none; /* Hide the default input */
-      }
-      
-      /* When using a label as a proxy for the file input, you can style it like a button */
       label[for="file-upload"] {
+	display: inline-block;
 	padding: 10px 20px;
 	background-color: #f0f0f0;
 	color: #333;
 	border: 1px solid #ccc;
 	cursor: pointer;
-	margin-right: 10px; /* Add space between the label and the button */
+	font-size: 1rem; /* Adjust to match your design */
+	border-radius: 5px;
+	margin-right: 10px; /* Space between label and button */
       }
       

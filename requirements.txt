@@ -1,2 +1,9 @@
 flask
 flask-cognito-auth
+Whisper
+pydub
+nltk
+boto3
+python-dotenv
+openai
+supabase

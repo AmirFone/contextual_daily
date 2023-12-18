@@ -1,7 +1,12 @@
-from flask import Flask, request, jsonify, session, redirect, url_for, send_from_directory, render_template
+from flask import Flask, request, jsonify, session, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
 from flask_cognito_auth import CognitoAuthManager, login_required
 import os
+from flask import Flask, request, jsonify
+from flask_login import login_required
+from werkzeug.utils import secure_filename
+import os
+from Audio_processing import split_audio, transcribe_audio
 
 # Initialize the Flask application
 app = Flask(__name__, static_url_path='')
@@ -68,10 +73,13 @@ def upload_audio():
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
-        # Placeholder for transcription logic
-        # transcription = transcribe_audio(filepath)
-        # return jsonify(transcription=transcription), 200
-        return jsonify(message='File uploaded', filename=filename), 200
+
+        # Splitting and transcribing
+        audio_segments = split_audio(filepath)
+        transcriptions = transcribe_audio(audio_segments)
+
+        return jsonify(transcriptions=transcriptions), 200
+
     return jsonify(error='File upload failed'), 500
 
 @app.route('/chatbox_query', methods=['POST'])

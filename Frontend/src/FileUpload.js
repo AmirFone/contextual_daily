@@ -1,40 +1,63 @@
-// FileUpload.js
 import React, { useState } from 'react';
-import './FileUpload.css'; // Make sure the path to your CSS file is correct
+import './FileUpload.css';
 
 const FileUpload = () => {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [transcript, setTranscript] = useState("");
 
-  // This function is called when the file input changes (file is selected)
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
+    setTranscript(""); // Clear the previous transcript when a new file is selected
   };
 
-  // This function is called when the upload button is clicked
-  const handleFileUpload = () => {
+  const handleFileUpload = async () => {
     if (selectedFile) {
-      console.log(selectedFile);
-      // Here, you would typically handle the file upload process,
-      // e.g., sending the file to a backend server
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      try {
+        const response = await fetch('your-api-endpoint', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          setTranscript(result.transcript); // Update the transcript state with the API response
+        } else {
+          console.error('Error uploading file');
+        }
+      } catch (error) {
+        console.error('Error uploading file', error);
+      }
     } else {
       console.log('No file selected');
     }
   };
 
   return (
-    <div className="file-upload-container">
-      <label htmlFor="file-upload" className="upload-btn">
-        Choose File
-      </label>
-      <input
-        id="file-upload"
-        type="file"
-        className="file-input"
-        onChange={handleFileChange}
-      />
-      <button onClick={handleFileUpload} className="upload-btn">
-        Upload File
-      </button>
+    <div className="upload-container">
+      <div className="upload-box">
+        <div className="title">upload today's audio file</div>
+        <div className="subtitle">Acceptable Formats: MP3, up to 50MB</div>
+        <label htmlFor="file-upload" className="upload-btn">
+          Browse File
+        </label>
+        <input
+          id="file-upload"
+          type="file"
+          onChange={handleFileChange}
+        />
+        <button onClick={handleFileUpload} className="upload-btn">
+          Upload
+        </button>
+      </div>
+      {transcript && (
+        <div className="transcript-container">
+          <h2>Transcript</h2>
+          <p>{transcript}</p>
+        </div>
+      )}
     </div>
   );
 };
