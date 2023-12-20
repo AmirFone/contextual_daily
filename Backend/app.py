@@ -2,32 +2,40 @@ from flask import Flask, request, jsonify, session, redirect, url_for, send_from
 from werkzeug.utils import secure_filename
 from flask_cognito_auth import CognitoAuthManager, login_required
 import os
-from flask import Flask, request, jsonify
-from flask_login import login_required
-from werkzeug.utils import secure_filename
-import os
 from Audio_processing import split_audio, transcribe_audio
+from Embedding_and_vector_database import upload_embeddings_to_db
+from dotenv import load_dotenv
 
 # Initialize the Flask application
 app = Flask(__name__, static_url_path='')
+load_dotenv()
 
-# Configuration
-app.config['SECRET_KEY'] = 'your_secret_key'
-app.config['UPLOAD_FOLDER'] = 'path_to_audio_uploads'
-app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB limit for audio file uploads
+# Configuration using environment variables
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER')
+app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_CONTENT_LENGTH', 50 * 1024 * 1024)) # Fallback to 50MB if not set
 
 # AWS Cognito Configuration
-app.config['COGNITO_REGION'] = 'your_cognito_region'
-app.config['COGNITO_USER_POOL_ID'] = 'your_cognito_user_pool_id'
-app.config['COGNITO_CLIENT_ID'] = 'your_cognito_client_id'
-app.config['COGNITO_CLIENT_SECRET'] = 'your_cognito_client_secret'
-app.config['COGNITO_DOMAIN'] = 'your_cognito_domain'
-app.config['COGNITO_REDIRECT_URI'] = 'https://yourdomainhere/cognito/callback'
-app.config['COGNITO_SIGNOUT_URI'] = 'https://yourdomainhere/signout'
-app.config['ERROR_REDIRECT_URI'] = 'error'
-app.config['COGNITO_STATE'] = 'state'
+app.config['COGNITO_REGION'] = os.getenv('COGNITO_REGION')
+app.config['COGNITO_USER_POOL_ID'] = os.getenv('COGNITO_USER_POOL_ID')
+app.config['COGNITO_CLIENT_ID'] = os.getenv('COGNITO_CLIENT_ID')
+app.config['COGNITO_CLIENT_SECRET'] = os.getenv('COGNITO_CLIENT_SECRET')
+app.config['COGNITO_DOMAIN'] = os.getenv('COGNITO_DOMAIN')
+app.config['COGNITO_REDIRECT_URI'] = os.getenv('COGNITO_REDIRECT_URI')
+app.config['COGNITO_SIGNOUT_URI'] = os.getenv('COGNITO_SIGNOUT_URI')
+app.config['ERROR_REDIRECT_URI'] = os.getenv('ERROR_REDIRECT_URI')
 
 cognito_auth = CognitoAuthManager(app)
+
+# Generate a new state value for the OAuth2 request
+def generate_state_value():
+    state = secrets.token_urlsafe()
+    session['oauth_state'] = state
+    return state
+
+cognito_auth = CognitoAuthManager(app)
+
+
 
 @app.route('/login', methods=['GET'])
 def login():
@@ -77,6 +85,7 @@ def upload_audio():
         # Splitting and transcribing
         audio_segments = split_audio(filepath)
         transcriptions = transcribe_audio(audio_segments)
+        upload_embeddings_to_db(transcriptions, session.get('cognito_user_id', 'none'))
 
         return jsonify(transcriptions=transcriptions), 200
 
