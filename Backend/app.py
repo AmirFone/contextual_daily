@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, session, redirect, url_for, send_from
 from werkzeug.utils import secure_filename
 from flask_cognito_auth import CognitoAuthManager, login_required
 import os
+import secrets
 from Audio_processing import split_audio, transcribe_audio
 from Embedding_and_vector_database import upload_embeddings_to_db
 from dotenv import load_dotenv
@@ -95,9 +96,8 @@ def upload_audio():
 @login_required
 def chatbox_query():
     query = request.json.get('query', '')
-    # Placeholder for chat query handling logic
-    # response = handle_chat_query(query)
-    # return jsonify(response=response)
+    
+    
     return jsonify(response='Chat query received', query=query)
 
 # Static file handling

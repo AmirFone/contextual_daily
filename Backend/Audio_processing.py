@@ -44,7 +44,9 @@ def transcribe_audio(files):
         # Breaking the transcription into segments of four sentences each
         for i in range(0, len(sentences), 4):
             segment = ' '.join(sentences[i:i + 4])
-            embeddings[index] = get_embeddings(segment)
+            embedding = get_embeddings(segment)
+            embeddings[index] = [embedding, segment]
             index += 1
 
     return embeddings
+
