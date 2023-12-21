@@ -1,53 +1,59 @@
+import os
 from pydub import AudioSegment
 import whisper
 import nltk
-nltk.download('punkt')
+from Open_AI_functions import OpenAIClient
 from nltk.tokenize import sent_tokenize
-from openai import OpenAI
 
-# Function to get embeddings from OpenAI
-def get_embeddings(text):
-   client = OpenAI()
-   response = client.embeddings.create(
-	input=text,
-	model="text-embedding-ada-002"
-	)
-   if response.status_code == 200:
-        return response.data[0].embedding
-   else:
-        raise Exception(f"Error in OpenAI API call: {response.text}")
+# Constants
+ONE_HOUR_MS = 60 * 60 * 1000  # One hour in milliseconds
+SENTENCES_PER_SEGMENT = 4  # Number of sentences per text segment for embedding
 
-def split_audio(filepath, one_hour=60 * 60 * 1000):  # One hour in milliseconds
-    # Load the MP3 file
-    audio = AudioSegment.from_mp3(filepath)
-    duration = len(audio)
-    full_transcript = ""  # Initialize an empty string for the full transcript
-    model = whisper.load_model("base")  # Load the Whisper model
+# Ensure necessary NLTK data is downloaded
+nltk.download('punkt')
 
-    for start in range(0, duration, one_hour):
-        end = min(start + one_hour, duration)
-        segment = audio[start:end]
-        segment_file = f"{filepath}_part{start // one_hour}.wav"
-        segment.export(segment_file, format="wav")  # Export as WAV
+def split_audio(filepath):
+    """
+    Splits an audio file into one-hour segments and transcribes them.
+    :param filepath: Path to the audio file.
+    :return: Full transcribed text of the audio.
+    """
+    try:
+        audio = AudioSegment.from_mp3(filepath)
+        duration = len(audio)
+        full_transcript = ""
+        model = whisper.load_model("base")
 
-        # Transcribe the segment and append to the full transcript
-        result = model.transcribe(segment_file)
-        full_transcript += result['text'] + " "
+        for start in range(0, duration, ONE_HOUR_MS):
+            end = min(start + ONE_HOUR_MS, duration)
+            segment = audio[start:end]
+            segment_file = f"{os.path.splitext(filepath)[0]}_part{start // ONE_HOUR_MS}.wav"
+            segment.export(segment_file, format="wav")
 
-    return full_transcript.strip()  # Return the combined transcript
+            result = model.transcribe(segment_file)
+            full_transcript += result['text'] + " "
 
+        return full_transcript.strip()
+    except Exception as e:
+        print(f"Error processing audio file: {e}")
+        return None
 
 def transcribe_audio(full_transcript):
+    """
+    Generates embeddings for segments of the transcript.
+    :param full_transcript: The full text transcript of an audio file.
+    :return: Dictionary of embeddings for each text segment.
+    """
     embeddings = {}
-    index = 1  # Start index for dictionary keys
+    index = 1
     sentences = sent_tokenize(full_transcript)
 
-    # Breaking the full transcript into segments of four sentences each
-    for i in range(0, len(sentences), 4):
-        segment = ' '.join(sentences[i:i + 4])
-        embedding = get_embeddings(segment)
+    openai_client = OpenAIClient()
+
+    for i in range(0, len(sentences), SENTENCES_PER_SEGMENT):
+        segment = ' '.join(sentences[i:i + SENTENCES_PER_SEGMENT])
+        embedding = openai_client.get_embeddings(segment)
         embeddings[index] = [embedding, segment]
         index += 1
 
     return embeddings
-
