@@ -5,6 +5,7 @@ from Audio_processing import get_embeddings
 # Constants
 SENTENCES_PER_SEGMENT = 4
 
+
 def extract_text_from_pdf(pdf_path):
     """
     Extracts text from a PDF file.
@@ -12,13 +13,16 @@ def extract_text_from_pdf(pdf_path):
     :return: Extracted text as a string.
     """
     try:
-        with open(pdf_path, 'rb') as file:
+        with open(pdf_path, "rb") as file:
             reader = PyPDF2.PdfFileReader(file)
-            full_text = ''.join([reader.getPage(page).extractText() for page in range(reader.numPages)])
+            full_text = "".join(
+                [reader.getPage(page).extractText() for page in range(reader.numPages)]
+            )
         return full_text
     except Exception as e:
         print(f"Error reading PDF file: {e}")
         return None
+
 
 def generate_embeddings_from_text(text, sentences_per_segment=SENTENCES_PER_SEGMENT):
     """
@@ -30,10 +34,11 @@ def generate_embeddings_from_text(text, sentences_per_segment=SENTENCES_PER_SEGM
     embeddings = {}
     sentences = sent_tokenize(text)
     for i in range(0, len(sentences), sentences_per_segment):
-        segment = ' '.join(sentences[i:i + sentences_per_segment])
+        segment = " ".join(sentences[i : i + sentences_per_segment])
         embedding = get_embeddings(segment)
         embeddings[i // sentences_per_segment + 1] = [embedding, segment]
     return embeddings
+
 
 def extract_text_and_process(pdf_path):
     """

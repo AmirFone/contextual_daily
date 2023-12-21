@@ -1,5 +1,6 @@
 from Open_AI_functions import OpenAIClient
 
+
 def construct_prompt(query: str, context: list):
     """
     Constructs a GPT prompt including a query and its context.
@@ -13,6 +14,7 @@ def construct_prompt(query: str, context: list):
     prompt += "Response:"
     return prompt
 
+
 def create_gpt_query(query: str, context: list):
     """
     Creates a GPT query with the provided query and context.
@@ -25,7 +27,7 @@ def create_gpt_query(query: str, context: list):
 
     openai_client = OpenAIClient()
     prompt = construct_prompt(query, context)
-    
+
     try:
         llm_response_with_context = openai_client.query_gpt3_5_turbo(prompt)
         return llm_response_with_context

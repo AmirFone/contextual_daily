@@ -1,6 +1,7 @@
 import boto3
 
-def get_cognito_user_id(access_token, region_name='your_region'):
+
+def get_cognito_user_id(access_token, region_name="your_region"):
     """
     Retrieve the Cognito User ID for the current user.
 
@@ -10,15 +11,15 @@ def get_cognito_user_id(access_token, region_name='your_region'):
     """
     try:
         # Initialize the Cognito identity provider client
-        client = boto3.client('cognito-idp', region_name=region_name)
+        client = boto3.client("cognito-idp", region_name=region_name)
 
         # Call the get_user method with the access token
         response = client.get_user(AccessToken=access_token)
 
         # Extract the Cognito User ID (sub)
-        for attribute in response['UserAttributes']:
-            if attribute['Name'] == 'sub':
-                return attribute['Value']
+        for attribute in response["UserAttributes"]:
+            if attribute["Name"] == "sub":
+                return attribute["Value"]
     except Exception as e:
         print(f"Error fetching Cognito User ID: {e}")
         return None
