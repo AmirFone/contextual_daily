@@ -8,3 +8,4 @@ python-dotenv
 openai
 supabase
 Flask-Uploader
+python-jose

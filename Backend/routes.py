@@ -1,3 +1,4 @@
+from user_info import get_cognito_user_id
 from flask import Blueprint, jsonify, request, redirect, url_for, session, send_from_directory
 from flask_cognito_auth import CognitoAuthManager, login_required
 from werkzeug.utils import secure_filename
@@ -8,7 +9,8 @@ from Embedding_and_vector_database import upload_embeddings_to_db, get_closest_d
 from pdf_processing import extract_text_and_process
 from flask_uploader import Uploader
 import glob
-
+import requests
+from jose import jwt
 audio_bp = Blueprint('audio', __name__)
 pdf_bp = Blueprint('pdf', __name__)
 auth_bp = Blueprint('auth', __name__)
@@ -92,16 +94,52 @@ def register_routes(app):
             return jsonify(message='PDF uploaded successfully', filename=filename), 200
         return jsonify(error='File upload failed'), 500
 
-    # Additional route handlers from your original code can be added here
     @auth_bp.route('/login', methods=['GET'])
     def login():
-        # Login logic
-        return redirect(url_for('cognitologin'))
+	# Generate a unique state value for CSRF protection
+        state = secrets.token_urlsafe()
+        session['oauth_state'] = state
+
+	# Construct the Cognito login URL
+        cognito_login_url = (
+		f"https://{app.config['COGNITO_DOMAIN']}/login"
+		f"?response_type=code"
+		f"&client_id={app.config['COGNITO_CLIENT_ID']}"
+		f"&redirect_uri={app.config['COGNITO_REDIRECT_URI']}"
+		f"&state={state}"
+	)
+
+    # Redirect the user to the Cognito login URL
+        return redirect(cognito_login_url)
 
     @auth_bp.route('/logout', methods=['GET'])
     @login_required
     def logout():
-        # Logout logic
-        return redirect(url_for('cognitologout'))
+    # Construct the Cognito logout URL
+       cognito_logout_url = (
+        f"https://{app.config['COGNITO_DOMAIN']}/logout"
+        f"?client_id={app.config['COGNITO_CLIENT_ID']}"
+        f"&logout_uri={url_for('auth_bp.login', _external=True)}"
+    )
 
-    # ... other auth related routes ...
+    # Redirect the user to the Cognito logout URL
+       return redirect(cognito_logout_url)
+
+    @auth_bp.route('/callback', methods=['GET'])
+    def cognito_callback():
+      id_token = request.args.get('id_token')
+
+      if id_token:
+        # Get the JSON Web Key Set (JWKS) from Cognito
+        jwks_url = f"https://cognito-idp.{app.config['COGNITO_REGION']}.amazonaws.com/{app.config['COGNITO_USER_POOL_ID']}/.well-known/jwks.json"
+        jwks = requests.get(jwks_url).json()
+
+        # Decode and verify the ID token
+        try:
+            # The following line assumes RS256 algorithm; adjust as needed based on your Cognito settings
+            decoded_token = jwt.decode(id_token, jwks, algorithms=['RS256'])
+            session['cognito_user_id'] = decoded_token['sub']
+        except jwt.JWTError:
+            return 'Invalid token', 401
+
+      return redirect(url_for('main'))
