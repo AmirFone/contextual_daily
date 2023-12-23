@@ -1,0 +1,78 @@
+.chat-container {
+	width: 100%;
+	max-width: 600px;
+	background: #fff;
+	border-radius: 10px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+      }
+      
+      .chat-header {
+	padding: 10px;
+	background: #eee;
+	display: flex;
+	justify-content: flex-end;
+      }
+      
+      .clear-chat-btn {
+	cursor: pointer;
+      }
+      
+      .chat-body {
+	height: 300px;
+	overflow-y: auto;
+	padding: 10px;
+	background: linear-gradient(to bottom, #ffffff, #f8f8f8);
+      }
+      
+      .chat-message {
+	margin: 5px;
+	padding: 10px;
+	border-radius: 10px;
+	background-color: #f1f0f0;
+	display: inline-block;
+	max-width: 80%;
+      }
+      
+      .chat-message.user {
+	background-color: #d1e7dd;
+	align-self: flex-end;
+      }
+      
+      .chat-footer {
+	display: flex;
+	padding: 10px;
+	background: #eee;
+      }
+      
+      .chat-input {
+	flex-grow: 1;
+	border: none;
+	padding: 10px;
+	margin-right: 10px;
+	border-radius: 5px;
+      }
+      
+      .send-btn {
+	padding: 10px 20px;
+	background-color: #4caf50;
+	color: white;
+	border: none;
+	cursor: pointer;
+	border-radius: 5px;
+      }
+      .upload-container, .chat-container {
+	border-radius: 20px; /* Match the border-radius */
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Match the box-shadow */
+	width: 400px; /* Match the width of the upload container */
+	/* Ensure other styling is consistent as well */
+      }
+      .chat-container {
+	width: 400px; /* Match the width of the upload container */
+	/* Other styles remain the same */
+      }
+      
+      /* You might need to add additional CSS for scrollbar and other elements */
+      

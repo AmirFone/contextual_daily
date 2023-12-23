@@ -154,5 +154,4 @@ def register_routes(app):
                 session["cognito_user_id"] = decoded_token["sub"]
             except jwt.JWTError:
                 return "Invalid token", 401
-
         return redirect(url_for("main"))

@@ -40,12 +40,14 @@ const FileUpload = () => {
       <div className="upload-box">
         <div className="title">upload today's audio file</div>
         <div className="subtitle">Acceptable Formats: MP3, up to 50MB</div>
+        <div className="subtitle">Also Acceptable: PDF, up to 50MB</div>
         <label htmlFor="file-upload" className="upload-btn">
           Browse File
         </label>
         <input
           id="file-upload"
           type="file"
+          accept=".mp3, .pdf" // Add .pdf to the accepted file types
           onChange={handleFileChange}
         />
         <button onClick={handleFileUpload} className="upload-btn">

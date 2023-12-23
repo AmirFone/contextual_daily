@@ -1,5 +1,12 @@
+/* App.css */
 .App {
-  text-align: center;
+  background: linear-gradient(to bottom, #8d72b4, #2e0742); /* Adjust to match your gradient */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+  padding: 40px; 
 }
 
 .App-logo {
@@ -26,6 +33,20 @@
 
 .App-link {
   color: #61dafb;
+}
+.main-container {
+  display: flex;
+  justify-content: center; /* Center the children horizontally */
+  align-items: start; /* Align the children to the top */
+  gap: 20px; /* Add space between the children */
+  padding: 20px;
+}
+
+.App {
+  /* Ensure the gradient background fills the entire page */
+  background: linear-gradient(to bottom, #yourTopColor, #yourBottomColor); /* Replace with your colors */
+  min-height: 100vh;
+  padding: 40px 0; /* Add padding at the top and bottom */
 }
 
 @keyframes App-logo-spin {
