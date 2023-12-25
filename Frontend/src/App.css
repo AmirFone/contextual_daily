@@ -1,14 +1,63 @@
 /* App.css */
+
+/* General styles for the app */
 .App {
-  background: linear-gradient(to bottom, #8d72b4, #2e0742); /* Adjust to match your gradient */
+  background: linear-gradient(to bottom, #a1c4fd, #c2e9fb); /* Match your gradient */
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px 0;
-  padding: 40px; 
+  padding: 40px; /* Consistent padding on all sides */
 }
 
+/* Container for upload and chat sections */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Style for both upload and chat containers */
+.upload-container,
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Distributes space evenly inside the container */
+  height: 300px; /* Adjust height as needed to make them equal */
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 20px; /* Spacing between sections */
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Add a dividing line after the upload container */
+.upload-container:after {
+  content: "";
+  display: block;
+  border-bottom: 2px solid #ccc;
+  margin-top: 20px; /* Space from the content above */
+}
+
+/* Additional top margin for the chat container */
+.chat-container {
+  margin-top: 20px; /* Additional spacing at the top */
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+  .upload-container,
+  .chat-container {
+    width: 90%;
+    height: auto; /* Height is automatic on smaller screens */
+    margin-bottom: 10px;
+  }
+}
+
+/* Other styles, if needed for animation or additional elements */
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -33,20 +82,6 @@
 
 .App-link {
   color: #61dafb;
-}
-.main-container {
-  display: flex;
-  justify-content: center; /* Center the children horizontally */
-  align-items: start; /* Align the children to the top */
-  gap: 20px; /* Add space between the children */
-  padding: 20px;
-}
-
-.App {
-  /* Ensure the gradient background fills the entire page */
-  background: linear-gradient(to bottom, #yourTopColor, #yourBottomColor); /* Replace with your colors */
-  min-height: 100vh;
-  padding: 40px 0; /* Add padding at the top and bottom */
 }
 
 @keyframes App-logo-spin {

@@ -1,5 +1,5 @@
-flask
-flask-cognito-auth
+flask==2.3.3
+Flask-Cognito
 Whisper
 pydub
 nltk
@@ -9,3 +9,4 @@ openai
 supabase
 Flask-Uploader
 python-jose
+flask_cognito_auth

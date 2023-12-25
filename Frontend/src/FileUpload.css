@@ -9,6 +9,31 @@ body, html {
 	background: linear-gradient(130deg, #a1c4fd 0%, #181c1d 100%);
 	font-family: 'Arial', sans-serif; /* Use the font that matches your design */
       }
+      .modal-content {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	right: auto;
+	bottom: auto;
+	margin-right: '-50%';
+	transform: translate(-50%, -50%);
+	width: 600px; /* Adjust as needed */
+	height: 400px; /* Adjust as needed */
+	background: #fff;
+	overflow: hidden;
+	border-radius: 10px;
+	outline: none;
+      }
+      
+      .modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.75);
+      }
+      
       
       .upload-container {
 	text-align: center;
@@ -51,6 +76,23 @@ body, html {
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Match the box-shadow */
 	/* Ensure other styling is consistent as well */
       }
+      /* Adjust the internal padding of the containers */
+.upload-box, .chat-body {
+	padding: 20px; /* Adjust to your design preference */
+      }
+
+      .transcript-container {
+	background: #f8f8f8; /* Example background color */
+	border: 1px solid #ddd; /* Example border */
+	border-radius: 4px; /* Example border radius */
+	padding: 15px; /* Example padding */
+	margin-top: 20px; /* Space between the upload section and transcript */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Example shadow */
+	max-width: 500px; /* Match the width of the upload container */
+	width: 100%; /* Use the full width available */
+      }
+      
+      
       
       label[for="file-upload"] {
 	display: inline-block;

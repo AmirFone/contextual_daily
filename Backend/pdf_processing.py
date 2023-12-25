@@ -1,6 +1,6 @@
 import PyPDF2
 from nltk.tokenize import sent_tokenize
-from Audio_processing import get_embeddings
+from Open_AI_functions import OpenAIClient
 
 # Constants
 SENTENCES_PER_SEGMENT = 4
@@ -31,11 +31,12 @@ def generate_embeddings_from_text(text, sentences_per_segment=SENTENCES_PER_SEGM
     :param sentences_per_segment: Number of sentences per text segment for embedding.
     :return: Dictionary of embeddings for each text segment.
     """
+    openai_client = OpenAIClient()
     embeddings = {}
     sentences = sent_tokenize(text)
     for i in range(0, len(sentences), sentences_per_segment):
         segment = " ".join(sentences[i : i + sentences_per_segment])
-        embedding = get_embeddings(segment)
+        embedding = openai_client.get_embeddings(segment)
         embeddings[i // sentences_per_segment + 1] = [embedding, segment]
     return embeddings
 
