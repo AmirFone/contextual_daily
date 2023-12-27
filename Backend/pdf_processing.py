@@ -48,6 +48,7 @@ def extract_text_and_process(pdf_path):
     :return: Dictionary of embeddings for each text segment.
     """
     full_text = extract_text_from_pdf(pdf_path)
+    print(full_text)
     if full_text is not None:
         return generate_embeddings_from_text(full_text)
     else:

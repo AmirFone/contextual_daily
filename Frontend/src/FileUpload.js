@@ -1,38 +1,68 @@
-import React, { useState } from 'react';
-import Modal from 'react-modal';
+import React, { useState, useEffect } from 'react';
 import './FileUpload.css';
-
-// Set the root for the modal for accessibility reasons (usually your app's root div ID)
-Modal.setAppElement('#root');
 
 const FileUpload = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [transcript, setTranscript] = useState("");
-  const [modalIsOpen, setModalIsOpen] = useState(false);
 
-  const cognitoLoginUrl = "https://contextual.auth.us-east-1.amazoncognito.com/login?client_id=kfjm29snmd1vd04t7fjbf874s&response_type=code&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2F"; // actual Cognito URL
+  // Added: useEffect to handle file upload after returning from sign-in
+  useEffect(() => {
+    // Check if there's a file reference in local storage after user returns from sign-in
+    const savedFileData = localStorage.getItem('fileUpload');
+    if (savedFileData) {
+      const savedFile = JSON.parse(savedFileData);
+      handleFileUpload(savedFile); // Continue with the upload
+      localStorage.removeItem('fileUpload'); // Clear the saved file from local storage
+    }
+  }, []);
 
-  const handleFileChange = (event) => {
-    // Store the file
-    setSelectedFile(event.target.files[0]);
-    // Open the login modal
-    setModalIsOpen(true);
+  // Modified: Saving file to state and local storage on file selection
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+
+    // Save file metadata to local storage
+    const fileData = {
+      name: file.name,
+      type: file.type,
+      size: file.size
+    };
+    localStorage.setItem('fileUpload', JSON.stringify(fileData)); 
+
+    // Existing login redirection logic...
+    try {
+      const response = await fetch("https://127.0.0.1:5000/login/login");
+      if (response.ok) {
+        const data = await response.json();
+        const cognitoLoginUrl = data.url;
+        window.location.href = cognitoLoginUrl;
+      } else {
+        console.error('Server responded with a non-OK status', response.status);
+      }
+    } catch (error) {
+      console.error('Error during login redirection', error);
+    }
   };
 
-  const closeModal = () => {
-    setModalIsOpen(false);
-    // If needed, handle the login confirmation logic here
-  };
-
-  const handleFileUpload = async () => {
-    // Ensure the user has selected a file and closed the modal (meaning they're logged in)
-    if (selectedFile && !modalIsOpen) {
+  // Modified: Accepting a file parameter for the upload process
+  const handleFileUpload = async (file = selectedFile) => {
+    if (file) {
       const formData = new FormData();
-      formData.append('file', selectedFile);
+      formData.append('file', file);
 
-      // Example POST request to an API endpoint
+      // Determine the endpoint based on file type
+      let endpoint = '';
+      if (file.type === 'application/pdf') {
+        endpoint = 'https://127.0.0.1:5000/pdf/upload';
+      } else if (file.type.startsWith('audio/')) {
+        endpoint = 'https://127.0.0.1:5000/audio/upload';
+      } else {
+        console.error('Unsupported file type');
+        return;
+      }
+
       try {
-        const response = await fetch('your-api-endpoint', {
+        const response = await fetch(endpoint, {
           method: 'POST',
           body: formData,
         });
@@ -49,6 +79,7 @@ const FileUpload = () => {
     }
   };
 
+  // Your existing JSX...
   return (
     <div className="upload-container">
       <h1>File Upload Feature</h1>
@@ -76,15 +107,6 @@ const FileUpload = () => {
           <p>{transcript}</p>
         </div>
       )}
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Cognito Login"
-        className="modal-content"
-        overlayClassName="modal-overlay"
-      >
-        <iframe src={cognitoLoginUrl} title="Cognito Login" frameBorder="0" width="100%" height="100%"></iframe>
-      </Modal>
     </div>
   );
 };
