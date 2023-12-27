@@ -1,2 +1,5 @@
 # Ignore .env files at any directory level
 **/.env
+
+# Ignore .pem files at any directory level
+**/*.pem
