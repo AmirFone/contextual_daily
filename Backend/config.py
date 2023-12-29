@@ -25,8 +25,6 @@ def get_config():
         "ERROR_REDIRECT_URI": os.getenv("ERROR_REDIRECT_URI"),
         "DEBUG": True,
         "SESSION_COOKIE_SECURE":True,
-        "SESSION_COOKIE_SECURE":True,
         "SESSION_COOKIE_HTTPONLY":True,
-        "SESSION_COOKIE_SAMESITE":"Lax",
-        "secret_key" : os.urandom(24)
+        "SESSION_COOKIE_SAMESITE":'None'
     }

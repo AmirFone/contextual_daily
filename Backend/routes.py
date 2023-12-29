@@ -7,6 +7,7 @@ from flask import (
     session,
     send_from_directory,
     current_app as app,
+    make_response,
 
 )
 from functools import wraps
@@ -171,8 +172,9 @@ def cognito_callback():
 
         else:
             return f"Error fetching tokens: {response.content}", response.status_code
-
-    return redirect('http://192.168.86.34:3000')
+    response = make_response("", 302)
+    response.headers["Location"] = 'https://192.168.86.34:3000'
+    return response
 
 
 @login_bp.route("/login", methods=["GET"])
@@ -225,7 +227,6 @@ def register_routes(app):
     app.config["UPLOADER_FOLDER"] = app.config["UPLOAD_FOLDER"]
     app.config["UPLOADER_ALLOWED_EXTENSIONS"] = {"pdf"}
     app.config["UPLOADER_MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024 * 1024  # 2GB
-
     def generate_state_value():
         state = secrets.token_urlsafe()
         session["oauth_state"] = state
