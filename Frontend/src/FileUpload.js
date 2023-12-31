@@ -30,55 +30,56 @@ const FileUpload = () => {
   // Modified: Saving file to state and local storage on file selection
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
-    setSelectedFile(file);
-};
-
-const handleFileUpload = async (file = selectedFile) => {
-  if (file) {
-    setIsLoading(true);
-    setUploadProgress(0); // Reset progress
-    const formData = new FormData();
-    formData.append('pdf_file', file);
-    const fileSizeMB = file.size / 1024 / 1024; // Convert size to MB
-    await simulateUploadProgress(fileSizeMB);
-    let uniqueUserId = localStorage.getItem("uniqueUserId");
-    if (!uniqueUserId) {
-      uniqueUserId = generateUniqueUserId();
-      localStorage.setItem("uniqueUserId", uniqueUserId);
+    if (file) {
+      console.log("Selected file type:", file.type);  // Add this line for debugging
+      setSelectedFile(file);
     }
-    formData.append('unique_user_id', uniqueUserId);
+  };
 
-    let endpoint = '';
-    if (file.type === 'application/pdf') {
-      endpoint = 'https://127.0.0.1:5000/pdf/upload';
-    } else if (file.type.startsWith('audio/')) {
-      endpoint = 'https://127.0.0.1:5000/audio/upload';
-    } else {
-      console.error('Unsupported file type');
-      setIsLoading(false); // Stop loading since file type is unsupported
-      return;
-    }
-
-    try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        setTranscript(result.transcript);
-        setIsLoading(false); // Set isLoading to false to hide ProgressBar
-      } else {
-        console.error('Error uploading file');
-        setIsLoading(false); // Set isLoading to false even if there's an error
+  const handleFileUpload = async (file = selectedFile) => {
+    if (file) {
+      setIsLoading(true);
+      setUploadProgress(0); // Reset progress
+      const formData = new FormData();
+      formData.append('pdf_file', file);
+      const fileSizeMB = file.size / 1024 / 1024; // Convert size to MB
+      await simulateUploadProgress(fileSizeMB);
+      let uniqueUserId = localStorage.getItem("uniqueUserId");
+      if (!uniqueUserId) {
+        uniqueUserId = generateUniqueUserId();
+        localStorage.setItem("uniqueUserId", uniqueUserId);
       }
-    } catch (error) {
-      console.error('Error uploading file', error);
-      setIsLoading(false); // Set isLoading to false on catch as well
+      formData.append('unique_user_id', uniqueUserId);
+  
+      let endpoint = '';
+      console.log("Uploaded file type:", file.type);
+      if (file.type === 'application/pdf') {
+        endpoint = 'https://127.0.0.1:5000/pdf/upload';
+      } else if (file.type.startsWith('audio/')) {
+        endpoint = 'https://127.0.0.1:5000/audio/upload';
+      } else {
+        console.error('Unsupported file type');
+        return;
+      }
+  
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          body: formData,
+        });
+  
+        if (response.ok) {
+          const result = await response.json();
+          setTranscript(result.transcript);
+        } else {
+          console.error('Error uploading file');
+        }
+      } catch (error) {
+        console.error('Error uploading file', error);
+      }
+      setIsLoading(false);
     }
-  }
-};
+  };
 
   function generateUniqueUserId() {
     return 'uid-' + Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -101,7 +102,7 @@ const handleFileUpload = async (file = selectedFile) => {
         />
         <div className="button-container">
           <label htmlFor="file-upload" className="upload-btn">Select File</label>
-          <button onClick={handleFileUpload} className="upload-btn">Start Analysis</button>
+          <button onClick={() => handleFileUpload(selectedFile)} className="upload-btn">Start Analysis</button>
         </div>
       </div>
 
