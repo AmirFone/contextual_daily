@@ -1,13 +1,12 @@
-/* App.css */
-
 /* General styles for the app */
 .App {
-  background: linear-gradient(to bottom, #a1c4fd, #c2e9fb); /* Match your gradient */
+  background: linear-gradient(to bottom, #a1c4fd, #c2e9fb);
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px; /* Consistent padding on all sides */
+  padding: 40px;
+  margin: 0;
 }
 
 /* Container for upload and chat sections */
@@ -15,8 +14,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  padding: 20px;
+  gap: 40px;
+  padding: 60px;
 }
 
 /* Style for both upload and chat containers */
@@ -24,11 +23,11 @@
 .chat-container {
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Distributes space evenly inside the container */
-  height: 300px; /* Adjust height as needed to make them equal */
+  justify-content: space-between;
+  height: 300px;
   width: 100%;
   max-width: 500px;
-  margin-bottom: 20px; /* Spacing between sections */
+  margin-bottom: 20px;
   padding: 20px;
   border-radius: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -39,12 +38,12 @@
   content: "";
   display: block;
   border-bottom: 2px solid #ccc;
-  margin-top: 20px; /* Space from the content above */
+  margin-top: 20px;
 }
 
 /* Additional top margin for the chat container */
 .chat-container {
-  margin-top: 20px; /* Additional spacing at the top */
+  margin-top: 20px;
 }
 
 /* Responsive design adjustments */
@@ -52,12 +51,12 @@
   .upload-container,
   .chat-container {
     width: 90%;
-    height: auto; /* Height is automatic on smaller screens */
+    height: auto;
     margin-bottom: 10px;
   }
 }
 
-/* Other styles, if needed for animation or additional elements */
+/* Animation styles */
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -69,6 +68,16 @@
   }
 }
 
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Header styles */
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -84,11 +93,24 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Gradient container styles */
+.container-with-gradient {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-image: linear-gradient(to bottom, #ffffff, #f8f8f8);
+}
+
+.child-element {
+  flex-grow: 1;
+}
+
+/* HTML and Body styles */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

@@ -1,10 +1,11 @@
 import os
+import json
 from supabase import create_client
 from Open_AI_functions import OpenAIClient
 
 # Constants
-MATCH_THRESHOLD = 0.78
-MATCH_COUNT = 10
+MATCH_THRESHOLD = 0.6
+MATCH_COUNT = 15
 
 
 def get_supabase_client():
@@ -23,30 +24,31 @@ def upload_embeddings_to_db(embeddings_dict: dict, specific_cognito_user_id: str
     :param specific_cognito_user_id: User ID for whom embeddings are being uploaded.
     """
     supabase = get_supabase_client()
-    for content, embedding in embeddings_dict.items():
+    for key in embeddings_dict:
+        embedding,content= embeddings_dict[key]
+        # print(f"embedding_one{embedding} embedding_one_End")
+        # print(f"embedding_two{content} embedding_two_End")
         embedding_list = (
             embedding.tolist() if not isinstance(embedding, list) else embedding
         )
+        # embedding_list = embedding
 
-        response = (
-            supabase.table("documents")
-            .insert(
-                {
-                    "user_id": specific_cognito_user_id,
-                    "content": content,
-                    "embedding": embedding_list,
-                }
+        try:
+            response = (
+                supabase.table("documents_embeddings")
+                .insert(
+                    {
+                        "user_id": specific_cognito_user_id,
+                        "content": content,
+                        "embedding": embedding_list,
+                    }
+                )
+                .execute()
             )
-            .execute()
-        )
 
-        if response.error:
-            print(
-                f"Failed to insert data for user {specific_cognito_user_id}: {response.error}"
-            )
-        else:
-            print(f"Data inserted successfully for user {specific_cognito_user_id}")
-
+        except Exception as e:
+            print(f"An error occurred: {e}")
+        # print(f"embedding uploaded to database:{response} ")
 
 def get_closest_documents(
     cognito_user_id: str,
@@ -65,6 +67,8 @@ def get_closest_documents(
     supabase = get_supabase_client()
     openai_client = OpenAIClient()
     query_embedding = openai_client.get_embeddings(query)
+    # print('quarry_embedding:',query_embedding)
+    # print(f'cognito_user_id:{cognito_user_id}')
     query_embedding_list = (
         query_embedding.tolist()
         if not isinstance(query_embedding, list)
@@ -81,12 +85,7 @@ def get_closest_documents(
                 "match_count": match_count,
             },
         ).execute()
-
-        if response.error:
-            print(f"Error fetching documents: {response.error}")
-            return []
-
-        return response.data
+        return json.dumps(response.data)
     except Exception as e:
         print(f"Error in retrieving documents: {e}")
         return []

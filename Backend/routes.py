@@ -1,3 +1,4 @@
+import json
 from flask import (
     Blueprint,
     jsonify,
@@ -18,6 +19,7 @@ from werkzeug.utils import secure_filename
 import os
 import secrets
 from Audio_processing import split_audio, transcribe_audio
+from Prompting import create_gpt_query
 from Embedding_and_vector_database import upload_embeddings_to_db, get_closest_documents
 from pdf_processing import extract_text_and_process
 from flask_uploader import Uploader
@@ -49,14 +51,17 @@ def staticfiles(filename):
     return send_from_directory("static", filename)
 
 @audio_bp.route("/upload", methods=["POST"])
-@login_required
+# @login_required
 def upload_audio():
         # Audio upload logic
-        if "audio_file" not in request.files:
+        if "pdf_file" not in request.files:
             return jsonify(error="No audio file part"), 400
-        file = request.files["audio_file"]
+        file = request.files["pdf_file"]
         if file.filename == "":
             return jsonify(error="No selected file"), 400
+        unique_user_id = request.form.get('unique_user_id', None)
+        if not unique_user_id:
+          return 'No unique user identifier provided', 400
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         file.save(filepath)
@@ -64,7 +69,7 @@ def upload_audio():
             full_transcript = split_audio(filepath)
             transcriptions = transcribe_audio(full_transcript)
             upload_embeddings_to_db(
-                transcriptions, session.get("cognito_user_id", "none")
+                transcriptions, unique_user_id
             )
             os.remove(filepath)
             for segment_file in glob.glob(f"{filepath}_part*.wav"):
@@ -74,37 +79,60 @@ def upload_audio():
             return jsonify(error=str(e)), 500
 
 @pdf_bp.route("/upload", methods=["POST"])
-@login_required
+# @login_required
 def upload_pdf():
     print("Starting PDF upload process")
-    uploader = app.uploader
+    # Define allowed extensions to only 'pdf'
+    ALLOWED_EXTENSIONS = {'pdf'}
 
+    # Check if file is part of the request
     if "pdf_file" not in request.files:
         print("Error: No PDF file part in request.files")
         return jsonify(error="No PDF file part"), 400
 
     file = request.files["pdf_file"]
+    unique_user_id = request.form.get('unique_user_id', None)
 
+    if not unique_user_id:
+        return 'No unique user identifier provided', 400
+
+
+    # Check if a file was actually selected
     if file.filename == "":
         print("Error: No file selected")
         return jsonify(error="No selected file"), 400
 
-    if file and uploader.allowed_file(file.filename):
+    # Extract the file extension and convert it to lower case
+    file_ext = file.filename.rsplit('.', 1)[1].lower()
+
+    # Check if file extension is 'pdf'
+    if file_ext not in ALLOWED_EXTENSIONS:
+        print(f"Error: Unsupported file type {file_ext}")
+        return jsonify(error="Unsupported file type"), 400
+
+    if file:
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config["UPLOADER_FOLDER"], filename)
         print(f"Saving file: {filepath}")
-        uploader.save(file, folder=app.config["UPLOADER_FOLDER"], name=filename)
+        
+        # Save the file
+        file.save(filepath)
 
-        print("Extracting text from PDF and processing")
-        Parsed_text_dictionary = extract_text_and_process(filepath)
+        try:
+            print("Extracting text from PDF and processing")
+            # Replace this with your actual processing function
+            Parsed_text_dictionary = extract_text_and_process(filepath)
 
-        print("Uploading embeddings to database")
-        upload_embeddings_to_db(
-            Parsed_text_dictionary, session.get("cognito_user_id", "none")
-        )
+            print("Uploading embeddings to database")
+            # Replace this with your actual database upload function
+            upload_embeddings_to_db(
+                Parsed_text_dictionary, str(unique_user_id)
+            )
 
-        print("Removing uploaded file")
-        os.remove(filepath)
+        finally:
+            print("Removing uploaded file")
+            # Remove the file after processing
+            os.remove(filepath)
 
         print("PDF uploaded successfully")
         return jsonify(message="PDF uploaded successfully", filename=filename), 200
@@ -174,6 +202,12 @@ def cognito_callback():
             return f"Error fetching tokens: {response.content}", response.status_code
     response = make_response("", 302)
     response.headers["Location"] = 'https://192.168.86.34:3000'
+
+    # Set the Cognito user ID in the response cookies
+    if 'cognito_user_id' in session:
+        # print('LL session cognito_user_id:', session)
+        response.set_cookie('cognito_user_id', session['cognito_user_id'])
+
     return response
 
 
@@ -200,7 +234,7 @@ def login():
     return jsonify(url=cognito_login_url)
 
 @loginout_bp.route("/logout", methods=["GET"])
-@login_required
+# @login_required
 def logout():
         # Construct the Cognito logout URL
         cognito_logout_url = (
@@ -212,11 +246,23 @@ def logout():
         # Redirect the user to the Cognito logout URL
         return redirect(cognito_logout_url)
 
+@chat_bp.route("/query", methods=["POST"])
+def chatbox_query():
+    data = request.json
+    unique_user_id = data.get('unique_user_id', None)
+    if not unique_user_id:
+        return 'No unique user identifier provided', 400
+    query = data.get("query", "")
+    context = get_closest_documents(unique_user_id, query)
+    response=create_gpt_query(query, context)
+    return jsonify(response=json.dumps(response))
+
 def register_routes(app):
     # cognito_auth = CognitoAuthManager(app)
     # cognito_auth.init(app)
     # cogauth = CognitoAuth(app)
-    uploader = Uploader(app,None)
+    uploader = Uploader(app, None)
+    app.uploader = uploader  # Attach the uploader to the app object
     app.register_blueprint(audio_bp, url_prefix="/audio")
     app.register_blueprint(pdf_bp, url_prefix="/pdf")
     app.register_blueprint(auth_bp, url_prefix="/auth")
@@ -231,11 +277,6 @@ def register_routes(app):
         state = secrets.token_urlsafe()
         session["oauth_state"] = state
         return state
-
-    def chatbox_query():
-        query = request.json.get("query", "")
-        get_closest_documents(session.get("cognito_user_id", "none"), query)
-        return jsonify(response="Chat query received", query=query)
 
 
     @app.errorhandler(404)

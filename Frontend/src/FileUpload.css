@@ -1,6 +1,7 @@
 /* FileUpload.css */
 body, html {
-	height: 100%;
+	min-height: 100vh;
+	height: 100vh; /* Use viewport height instead of percentage */
 	margin: 0;
 	padding: 0;
 	display: flex;
@@ -8,6 +9,7 @@ body, html {
 	align-items: center;
 	background: linear-gradient(130deg, #a1c4fd 0%, #181c1d 100%);
 	font-family: 'Arial', sans-serif; /* Use the font that matches your design */
+	background-attachment: fixed;
       }
       .modal-content {
 	position: absolute;
@@ -36,12 +38,15 @@ body, html {
       
       
       .upload-container {
+	margin-top: 55px;
 	text-align: center;
-	padding: 2rem;
+	padding: 3rem;
 	border-radius: 20px; /* Adjust to match your design */
 	box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 	background: white;
-	max-width: 500px; /* Adjust to match your design */
+	max-width: 650px;
+	max-height: 700px; /* Adjust to match your design */
+	min-height: 400px; /* Adjust to match your design */
 	width: 100%;
       }
       
@@ -79,6 +84,7 @@ body, html {
       /* Adjust the internal padding of the containers */
 .upload-box, .chat-body {
 	padding: 20px; /* Adjust to your design preference */
+	padding-bottom: 3rem; 
       }
 
       .transcript-container {
@@ -95,14 +101,49 @@ body, html {
       
       
       label[for="file-upload"] {
-	display: inline-block;
-	padding: 10px 20px;
 	background-color: #f0f0f0;
 	color: #333;
 	border: 1px solid #ccc;
+	margin-right: 0; /* No space needed if within flex container */
+      }
+
+
+      /* Styles for the progress bar container */
+      .upload-container .progress {
+	height: 20px; /* Set the height of the progress bar */
+	background-color: #afafaf; /* A light grey background color for the progress bar */
+	border-radius: 5px; /* Rounded corners for the progress bar */
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); /* Inner shadow for some depth */
+      }
+      
+      /* Styles for the progress bar itself */
+      .upload-container .progress-bar {
+	background-color: #bfbfc5; /* A nice shade of blue for the filled part */
+	transition: width 0.6s ease; /* Smooth transition for the filling effect */
+      }
+      
+      /* Optional: Styles for the progress label */
+      .upload-container .progress-bar span {
+	color: rgb(90, 84, 84); /* White text color */
+	font-weight: bold; /* Bold font for better readability */
+      }
+      .button-container {
+	display: flex;
+	justify-content: center;
+	gap: 10px; /* Adjust the space between buttons */
+      }
+      
+      /* Unified button style */
+      .upload-btn, label[for="file-upload"] {
+	padding: 10px 20px;
+	background-color: #4CAF50; /* Adjust to match your design */
+	color: white;
+	border: none;
 	cursor: pointer;
 	font-size: 1rem; /* Adjust to match your design */
 	border-radius: 5px;
-	margin-right: 10px; /* Space between label and button */
+	margin: 0.5rem 0; /* Gives space above and below the button */
+	text-align: center;
+	display: inline-block;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       }
-      

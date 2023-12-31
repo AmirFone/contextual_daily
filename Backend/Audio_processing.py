@@ -1,9 +1,10 @@
 import os
 from pydub import AudioSegment
+from concurrent.futures import ThreadPoolExecutor
 import whisper
 import nltk
-from Open_AI_functions import OpenAIClient
 from nltk.tokenize import sent_tokenize
+from Open_AI_functions import OpenAIClient
 
 # Constants
 ONE_HOUR_MS = 60 * 60 * 1000  # One hour in milliseconds
@@ -12,35 +13,43 @@ SENTENCES_PER_SEGMENT = 4  # Number of sentences per text segment for embedding
 # Ensure necessary NLTK data is downloaded
 nltk.download("punkt")
 
+# Function to process each audio segment
+def process_segment(model, segment, index, base_filepath):
+    segment_file = f"{base_filepath}_part{index}.wav"
+    segment.export(segment_file, format="wav")
+    result = model.transcribe(segment_file)
+    os.remove(segment_file)  # Remove the segment file after transcription
+    return result["text"]
 
-def split_audio(filepath):
+def split_audio(filepath, num_workers=4):
     """
-    Splits an audio file into one-hour segments and transcribes them.
+    Splits an audio file into one-hour segments and transcribes them using parallel processing.
     :param filepath: Path to the audio file.
+    :param num_workers: Number of parallel workers for processing.
     :return: Full transcribed text of the audio.
     """
     try:
-        audio = AudioSegment.from_mp3(filepath)
+        audio = AudioSegment.from_file(filepath)
         duration = len(audio)
         full_transcript = ""
         model = whisper.load_model("base")
+        base_filepath = os.path.splitext(filepath)[0]
 
-        for start in range(0, duration, ONE_HOUR_MS):
-            end = min(start + ONE_HOUR_MS, duration)
-            segment = audio[start:end]
-            segment_file = (
-                f"{os.path.splitext(filepath)[0]}_part{start // ONE_HOUR_MS}.wav"
-            )
-            segment.export(segment_file, format="wav")
+        with ThreadPoolExecutor(max_workers=num_workers) as executor:
+            futures = []
+            for start in range(0, duration, ONE_HOUR_MS):
+                end = min(start + ONE_HOUR_MS, duration)
+                segment = audio[start:end]
+                futures.append(executor.submit(process_segment, model, segment, start // ONE_HOUR_MS, base_filepath))
 
-            result = model.transcribe(segment_file)
-            full_transcript += result["text"] + " "
+            for future in futures:
+                full_transcript += future.result() + " "
 
+        print('full_transcript', full_transcript)
         return full_transcript.strip()
     except Exception as e:
         print(f"Error processing audio file: {e}")
         return None
-
 
 def transcribe_audio(full_transcript):
     """

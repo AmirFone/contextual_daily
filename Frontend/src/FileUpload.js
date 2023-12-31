@@ -1,56 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import './FileUpload.css';
-
+import ProgressBar from 'react-bootstrap/ProgressBar';
 const FileUpload = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [transcript, setTranscript] = useState("");
+  const [previousFileData, setPreviousFileData] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0); 
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Added: useEffect to handle file upload after returning from sign-in
   useEffect(() => {
-    // Check if there's a file reference in local storage after user returns from sign-in
-    const savedFileData = localStorage.getItem('fileUpload');
+    const savedFileData = sessionStorage.getItem('fileUpload');
     if (savedFileData) {
-      const savedFile = JSON.parse(savedFileData);
-      handleFileUpload(savedFile); // Continue with the upload
-      localStorage.removeItem('fileUpload'); // Clear the saved file from local storage
+      setPreviousFileData(JSON.parse(savedFileData)); // Set the previous file data
+      // Prompt the user to reselect the file (implement UI logic as needed)
     }
   }, []);
+
+  const simulateUploadProgress = async (fileSize) => {
+    const uploadTimePerMB = 11; // Set this to the number of seconds per MB
+    const totalUploadTime = fileSize * uploadTimePerMB;
+
+    for (let i = 0; i <= 100; i++) {
+      setUploadProgress(i);
+      await new Promise(resolve => setTimeout(resolve, totalUploadTime * 10)); // Wait for a fraction of total upload time
+    }
+  };
+
 
   // Modified: Saving file to state and local storage on file selection
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
+};
 
-    // Save file metadata to local storage
-    const fileData = {
-      name: file.name,
-      type: file.type,
-      size: file.size
-    };
-    localStorage.setItem('fileUpload', JSON.stringify(fileData)); 
-
-    // Existing login redirection logic...
-    try {
-      const response = await fetch("https://127.0.0.1:5000/login/login");
-      if (response.ok) {
-        const data = await response.json();
-        const cognitoLoginUrl = data.url;
-        window.location.href = cognitoLoginUrl;
-      } else {
-        console.error('Server responded with a non-OK status', response.status);
-      }
-    } catch (error) {
-      console.error('Error during login redirection', error);
-    }
-  };
-
-  // Modified: Accepting a file parameter for the upload process
   const handleFileUpload = async (file = selectedFile) => {
     if (file) {
+      setIsLoading(true);
+      setUploadProgress(0); // Reset progress
       const formData = new FormData();
-      formData.append('file', file);
-
-      // Determine the endpoint based on file type
+      formData.append('pdf_file', file);
+      const fileSizeMB = file.size / 1024 / 1024; // Convert size to MB
+      await simulateUploadProgress(fileSizeMB);
+      let uniqueUserId = localStorage.getItem("uniqueUserId");
+      if (!uniqueUserId) {
+        uniqueUserId = generateUniqueUserId();
+        localStorage.setItem("uniqueUserId", uniqueUserId);
+      }
+      formData.append('unique_user_id', uniqueUserId);
+  
       let endpoint = '';
       if (file.type === 'application/pdf') {
         endpoint = 'https://127.0.0.1:5000/pdf/upload';
@@ -60,51 +57,70 @@ const FileUpload = () => {
         console.error('Unsupported file type');
         return;
       }
-
+  
       try {
         const response = await fetch(endpoint, {
           method: 'POST',
           body: formData,
         });
-
+  
         if (response.ok) {
           const result = await response.json();
-          setTranscript(result.transcript); // Update the transcript state with the response
+          setTranscript(result.transcript);
         } else {
           console.error('Error uploading file');
         }
       } catch (error) {
         console.error('Error uploading file', error);
       }
+      setIsLoading(false);
     }
   };
-
-  // Your existing JSX...
+  function generateUniqueUserId() {
+    return 'uid-' + Date.now().toString(36) + Math.random().toString(36).substr(2);
+  }
+  
   return (
     <div className="upload-container">
-      <h1>File Upload Feature</h1>
+      <h1>Semantic Analysis Tool</h1>
       <div className="upload-box">
-        <div className="title">Upload today's audio file</div>
-        <div className="subtitle">Acceptable Formats: MP3, up to 50MB</div>
-        <div className="subtitle">Also Acceptable: PDF, up to 50MB</div>
+        <p>Enhance your documents and audio files with our advanced semantic analysis. Get started by uploading your file.</p>
+        <div className="title">File Upload</div>
+        <div className="subtitle">Supported Audio: MP3, M4A (Max 50MB)</div>
+        <div className="subtitle">Supported Documents: PDF (Max 300 pages)</div>
         <input
           id="file-upload"
           type="file"
-          accept=".mp3, .pdf"
+          accept=".mp3, .pdf, .m4a"
           onChange={handleFileChange}
           style={{ display: 'none' }}
         />
-        <label htmlFor="file-upload" className="upload-btn">
-          Browse File
-        </label>
-        <button onClick={handleFileUpload} className="upload-btn">
-          Upload
-        </button>
+        <div className="button-container">
+          <label htmlFor="file-upload" className="upload-btn">Select File</label>
+          <button onClick={handleFileUpload} className="upload-btn">Start Analysis</button>
+        </div>
       </div>
+
+      {isLoading && (
+        <ProgressBar
+          now={uploadProgress}
+          label={`${uploadProgress}%`}
+          className="progress-bar"
+          striped
+          animated
+        />
+      )}
+
       {transcript && (
         <div className="transcript-container">
-          <h2>Transcript</h2>
+          <h2>Extracted Content</h2>
           <p>{transcript}</p>
+        </div>
+      )}
+
+      {previousFileData && (
+        <div className="reupload-notification">
+          <p>You have a pending file. Please reselect: {previousFileData.name}</p>
         </div>
       )}
     </div>

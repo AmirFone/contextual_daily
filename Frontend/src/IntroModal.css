@@ -1,0 +1,49 @@
+/* CSS for the modal background */
+.modal {
+	display: block; /* Use JavaScript to toggle this to 'none' for hiding */
+	position: fixed;
+	z-index: 1000;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgba(0, 0, 0, 0.6); /* Darker background for contrast */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+    }
+    
+    /* CSS for the modal content */
+    .modal-content {
+	background: linear-gradient(to bottom right, #fafafa, #eaeaea);
+	border-radius: 8px;
+	padding: 30px;
+	border: 1px solid #ddd;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.1);
+	width: 40%;
+	transition: box-shadow 0.3s ease, transform 0.3s ease;
+	will-change: transform;
+	transform-origin: center;
+    }
+    
+    /* CSS for the close button */
+    .close {
+	color: #aaaaaa;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+	transition: color 0.2s;
+    }
+    
+    .close:hover,
+    .close:focus {
+	color: #333;
+	cursor: pointer;
+	text-decoration: none;
+    }
+    
+    /* Hover effect for the modal content */
+    .modal-content:hover {
+	box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15), 0 12px 12px rgba(0, 0, 0, 0.15);
+    }
