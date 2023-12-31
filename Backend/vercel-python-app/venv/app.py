@@ -8,10 +8,13 @@ def create_app():
     CORS(app)
     app.config.update(get_config())
     register_routes(app)
-
     return app
 
+app = create_app()
 
-if __name__ == "__main__":
-    app = create_app()
-    app.run(host="0.0.0.0", port=5000)
+def lambda_handler(event, context):
+    # Logic to handle the Lambda event and return a response
+    return {
+        'statusCode': 200,
+        'body': 'Hello from Lambda!'
+    }
