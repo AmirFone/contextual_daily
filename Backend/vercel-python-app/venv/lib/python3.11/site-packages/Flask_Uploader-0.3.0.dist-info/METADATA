@@ -1,0 +1,156 @@
+Metadata-Version: 2.1
+Name: Flask-Uploader
+Version: 0.3.0
+Summary: File uploader for Flask with flexible extensibility.
+Author-email: Kirill Vercetti <office@kyzima-spb.com>
+License: MIT License
+        
+        Copyright (c) 2022 Kirill Vercetti
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://github.com/kyzima-spb/flask-uploader
+Project-URL: Repository, https://github.com/kyzima-spb/flask-uploader.git
+Project-URL: Issue Tracker, https://github.com/kyzima-spb/flask-uploader/issues
+Project-URL: Change log, https://github.com/kyzima-spb/flask-uploader#flask-uploader
+Keywords: flask,flask upload,flask upload files,file uploader,flask aws s3
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Flask
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Requires-Python: >=3.7
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Requires-Dist: flask >=0.11
+Requires-Dist: Flask-WTF >=0.13
+Requires-Dist: Pillow >=8.0
+Requires-Dist: importlib-metadata ; python_version < "3.8"
+Requires-Dist: typing-extensions ; python_version < "3.9"
+Provides-Extra: aws
+Requires-Dist: boto3 >=1.22 ; extra == 'aws'
+Provides-Extra: dev
+Requires-Dist: pytest >=7.1 ; extra == 'dev'
+Requires-Dist: pytest-mock >=3.7 ; extra == 'dev'
+Requires-Dist: flake8 >=4 ; extra == 'dev'
+Requires-Dist: boto3-stubs-lite[s3] ; extra == 'dev'
+Requires-Dist: mypy >=0.950 ; extra == 'dev'
+Requires-Dist: types-pillow ; extra == 'dev'
+Provides-Extra: pymongo
+Requires-Dist: flask-pymongo >=2.3 ; extra == 'pymongo'
+
+Flask-Uploader
+==============
+
+|PyPI| |LICENCE| |STARS| |DOCS|
+
+|DOWNLOADS| |DOWNLOADS_M| |DOWNLOADS_W|
+
+**Flask-Uploader** - file uploader for Flask with flexible extensibility.
+
+How to use can be found in the documentation_.
+Documentation is in Russian only, use a translator for other languages.
+
+See the usage example_ for more understanding.
+
+Development
+-----------
+
+.. code-block:: shell
+
+    # Run mypy
+    $ docker compose run --rm package mypy
+
+    # Run pytest
+    $ docker compose run --rm package pytest
+
+.. |PyPI| image:: https://img.shields.io/pypi/v/flask-uploader.svg
+   :target: https://pypi.org/project/flask-uploader/
+   :alt: Latest Version
+
+.. |LICENCE| image:: https://img.shields.io/github/license/kyzima-spb/flask-uploader.svg
+   :target: https://github.com/kyzima-spb/flask-uploader/blob/master/LICENSE
+   :alt: MIT
+
+.. |STARS| image:: https://img.shields.io/github/stars/kyzima-spb/flask-uploader.svg
+   :target: https://github.com/kyzima-spb/flask-uploader/stargazers
+   :alt: GitHub stars
+
+.. |DOCS| image:: https://readthedocs.org/projects/flask-uploader/badge/?version=latest
+   :target: https://flask-uploader.readthedocs.io/ru/latest/?badge=latest
+   :alt: Documentation Status
+
+.. |DOWNLOADS| image:: https://pepy.tech/badge/flask-uploader
+   :target: https://pepy.tech/project/flask-uploader
+
+.. |DOWNLOADS_M| image:: https://pepy.tech/badge/flask-uploader/month
+   :target: https://pepy.tech/project/flask-uploader
+
+.. |DOWNLOADS_W| image:: https://pepy.tech/badge/flask-uploader/week
+   :target: https://pepy.tech/project/flask-uploader
+
+.. _documentation: https://flask-uploader.readthedocs.io/ru/latest/
+.. _example: https://github.com/kyzima-spb/flask-uploader/tree/master/example/uploader
+
+Changes
+-------
+
+Version 0.3.0
+-------------
+
+Released 2023-10-03
+
+-   The ``flask_uploader.contrib.wtf.UploadField.save`` method returns the lookup.
+-   Minimum Flask version lowered to 0.11
+-   Minimum Pillow version lowered to 8.0
+-   Minimum Flask-WTF version lowered to 0.13
+-   Python 3.7 compatibility issues fixed
+-   Fixed type annotations
+-   ``setup.py`` and ``setup.cfg`` have been replaced with ``pyproject.toml``.
+
+Version 0.2.0
+-------------
+
+Released 2022-06-10
+
+-   First public preview release.
+
+MIT License
+
+Copyright (c) 2022 Kirill Vercetti
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

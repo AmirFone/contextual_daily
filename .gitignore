@@ -3,3 +3,4 @@
 
 # Ignore .pem files at any directory level
 **/*.pem
+.vercel
