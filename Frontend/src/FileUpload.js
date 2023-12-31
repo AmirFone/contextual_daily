@@ -54,9 +54,9 @@ const FileUpload = () => {
       let endpoint = '';
       console.log("Uploaded file type:", file.type);
       if (file.type === 'application/pdf') {
-        endpoint = 'https://127.0.0.1:5000/pdf/upload';
+        endpoint = 'http://127.0.0.1:5000/pdf/upload';
       } else if (file.type.startsWith('audio/')) {
-        endpoint = 'https://127.0.0.1:5000/audio/upload';
+        endpoint = 'http://127.0.0.1:5000/audio/upload';
       } else {
         console.error('Unsupported file type');
         return;
