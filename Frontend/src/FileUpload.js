@@ -54,9 +54,9 @@ const FileUpload = () => {
       let endpoint = '';
       console.log("Uploaded file type:", file.type);
       if (file.type === 'application/pdf') {
-        endpoint = 'http://127.0.0.1:5000/pdf/upload';
+        endpoint = 'https://contextual-9b9c45ec5823.herokuapp.com/pdf/upload';
       } else if (file.type.startsWith('audio/')) {
-        endpoint = 'http://127.0.0.1:5000/audio/upload';
+        endpoint = 'https://contextual-9b9c45ec5823.herokuapp.com/audio/upload';
       } else {
         console.error('Unsupported file type');
         return;
