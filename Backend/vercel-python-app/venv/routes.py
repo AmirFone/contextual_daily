@@ -53,30 +53,39 @@ def staticfiles(filename):
 @audio_bp.route("/upload", methods=["POST"])
 # @login_required
 def upload_audio():
-        # Audio upload logic
-        if "pdf_file" not in request.files:
-            return jsonify(error="No audio file part"), 400
-        file = request.files["pdf_file"]
-        if file.filename == "":
-            return jsonify(error="No selected file"), 400
-        unique_user_id = request.form.get('unique_user_id', None)
-        if not unique_user_id:
-          return 'No unique user identifier provided', 400
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        file.save(filepath)
-        try:
-            full_transcript = split_audio(filepath)
-            transcriptions = transcribe_audio(full_transcript)
-            upload_embeddings_to_db(
-                transcriptions, unique_user_id
-            )
-            os.remove(filepath)
-            for segment_file in glob.glob(f"{filepath}_part*.wav"):
-                os.remove(segment_file)
-            return jsonify(transcriptions=transcriptions), 200
-        except Exception as e:
-            return jsonify(error=str(e)), 500
+    # Audio upload logic
+    if "pdf_file" not in request.files:
+        return jsonify(error="No audio file part"), 400
+    file = request.files["pdf_file"]
+    if file.filename == "":
+        return jsonify(error="No selected file"), 400
+    unique_user_id = request.form.get('unique_user_id', None)
+    if not unique_user_id:
+        return 'No unique user identifier provided', 400
+    filename = secure_filename(file.filename)
+
+    # Use the /tmp directory for file storage in AWS Lambda
+    filepath = os.path.join("/tmp", filename)
+    
+    file.save(filepath)
+    try:
+        full_transcript = split_audio(filepath)
+        transcriptions = transcribe_audio(full_transcript)
+        upload_embeddings_to_db(transcriptions, unique_user_id)
+        
+        # Cleanup: remove the original file and any segment files
+        os.remove(filepath)
+        for segment_file in glob.glob(f"/tmp/{filename}_part*.wav"):
+            os.remove(segment_file)
+        
+        return jsonify(transcriptions=transcriptions), 200
+    except Exception as e:
+        # Cleanup even if an error occurs
+        os.remove(filepath)
+        for segment_file in glob.glob(f"/tmp/{filename}_part*.wav"):
+            os.remove(segment_file)
+        return jsonify(error=str(e)), 500
+
 
 @pdf_bp.route("/upload", methods=["POST"])
 # @login_required
@@ -96,7 +105,6 @@ def upload_pdf():
     if not unique_user_id:
         return 'No unique user identifier provided', 400
 
-
     # Check if a file was actually selected
     if file.filename == "":
         print("Error: No file selected")
@@ -112,9 +120,11 @@ def upload_pdf():
 
     if file:
         filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config["UPLOADER_FOLDER"], filename)
+
+        # Use /tmp directory for Lambda writable space
+        filepath = os.path.join("/tmp", filename)
         print(f"Saving file: {filepath}")
-        
+
         # Save the file
         file.save(filepath)
 
