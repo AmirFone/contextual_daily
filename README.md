@@ -4,14 +4,24 @@
 
 Our web application is an innovative solution designed to analyze and comprehend extensive documentation and audio files. By converting uploads into embeddings and storing them in a vector database, the platform offers a rich and contextual chat experience, allowing users to query and receive responses that are contextually relevant to the uploaded content.
 
+![File Upload UI](Screenshot_2024-01-01_at_5.43.25_PM.png)
+
 ## Features
 
 - **Document Upload:** Users can upload PDF documents for analysis, limited to a maximum of 300 pages.
 - **Audio Upload:** The application accepts MP3 and M4A audio files, limited to 50MB in size.
+
+![Semantic Analysis Tool](Screenshot_2024-01-01_at_5.43.43_PM.png)
+
 - **Semantic Analysis:** Through natural language processing, the app analyzes the text and audio to provide in-depth insights.
 - **Contextual Chat:** Leveraging embeddings and vector databases, the chat feature understands the context of user queries to deliver pertinent information.
+
+![Chat Interface Query](Screenshot_2024-01-01_at_5.44.10_PM.png)
+
 - **Cognito Integration:** Ensures secure authentication and session handling for users.
 - **Responsive UI:** The frontend is designed to be responsive and user-friendly, facilitating ease of interaction with the application.
+
+![Chat Interface Response](Screenshot_2024-01-01_at_5.44.19_PM.png)
 
 ## Technical Components
 
