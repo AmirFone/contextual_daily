@@ -81,12 +81,11 @@ Don't forget to give the project a star! Thanks again!
 
 ## Support and Contact
 
-If you encounter any problems or have any questions, please contact support@contextualchatapp.com. Our team is available to assist you.
+If you encounter any problems or have any questions, please contact ah2324@cornell.edu
 
 ## License
 
 Distributed under the MIT License. See LICENSE for more information.
 
-*Note: The email support@contextualchatapp.com is a placeholder. You should replace it with your actual support email address.*
 
 *This README assumes that you have a basic understanding of React, Node.js, Python, Flask, AWS, and OpenAI. It also assumes that you are familiar with virtual environments in Python for dependency management. Adjust the documentation according to the actual environment and dependencies of your project.*
